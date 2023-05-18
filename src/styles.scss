@@ -1,1 +1,55 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+// Google legends starts
+#legend {
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+}
+
+.legend-title {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.legend-item {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.bg-green {
+  background-color: #7fff7f;
+}
+
+.bg-yellow {
+  background-color: #ffff7f;
+}
+
+.bg-red {
+  background-color: #ff7f7f;
+}
+
+.bg-black {
+  background-color: #000;
+  color: #fff;
+}
+
+.bg-gray {
+  background-color: #ccc;
+}
+
+// Google legends ends
