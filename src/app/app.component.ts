@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { Observable } from 'rxjs';
@@ -24,11 +24,11 @@ const maxEndDate = moment().subtract(1, 'days');
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   private map: any; // container for google maps
 
-  // @ViewChild('myChart') private chartRef: any | ElementRef;
   private chart: any;
+  private chartRendered: boolean = false;
 
   private roads = AVAILABLE_ROADS;
   public filteredOptions: Observable<any[]>;
@@ -51,33 +51,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    console.log('today: ', today.toDate());
-    console.log('maxStartDate: ', maxStartDate.toDate());
-    console.log('maxEndDate: ', maxEndDate.toDate());
-
-    this.initializeLiveTrafficView();  
-    // this.getTrafficeDensity();
-    
-  }
-  
-  ngAfterViewInit(): void {
-    // this.initializeChart(data);
-    
+    this.initializeLiveTrafficView();
   }
 
   private initializeChart(chartData: any[]) {
-    let ctx: any = document.getElementById('myChart');
-
-    console.log('ctx: ', ctx)
-
-    if (!ctx) return;
-    ctx = ctx.getContext('2d')
-    // const ctx = this.chartRef.nativeElement.getContext('2d');
-  
+    const ctx: any = document.getElementById('myChart');
     const data = {
       labels: ['1 AM', '3 AM', '5 AM', '7 AM', '9 AM', '11 AM', '1 PM', '3 PM', '5 PM', '7 PM', '9 PM', '11 PM'],
       datasets: chartData
     };
+
     this.chart = new Chart(ctx, {
       type: 'bar',
       data: data,
@@ -94,13 +77,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         }
       }
     });
-    this.chart.update();
+    this.chartRendered = true;
+  }
 
-    // setTimeout(() => {
-    //   console.log('updategin')
-    //   this.chart.data.datasets[0].data = [...this.chart.data.datasets[0].data, [10]];
-    //   this.chart.update();
-    // }, 1000 * 5);
+  private updateChart(chartData: any) {
+    this.chart.data.datasets = chartData;
+    this.chart.update();
   }
 
   displayFn(road: any): string {
@@ -121,7 +103,9 @@ export class AppComponent implements OnInit, AfterViewInit {
       next: (data) => {
         console.log('data ======================================================');
         console.log(data);
-        this.initializeChart(data);
+
+        if (!this.chartRendered) this.initializeChart(data);
+        else this.updateChart(data);
 
         this.tdLoadingState = 'loaded';
       },
@@ -132,58 +116,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.tdLoadingState = 'error';
       }
     });
-  }
-
-  public onSelectStartDate(event: MatDatepickerInputEvent<Date>): void {
-    const startDate: any = event.value;
-    console.log('startDate: ', startDate);
-
-
-    if (startDate >= today) {
-
-      // this.startDate.setValue(null);
-    }
-  }
-
-  public onSelectEndDate(event: MatDatepickerInputEvent<Date>): void {
-    const endDate: any = event.value;
-    console.log('endDate: ', endDate);
-
-
-    if (endDate >= today) {
-      // this.endDate.setValue(null);
-    }
-  }
-
-  private getTrafficeDensity() {
-    const payload = {
-      "origin": {
-        "location": {
-          "latLng": {
-            "latitude": 17.447088,
-            "longitude": 78.363808
-          }
-        }
-      },
-      "destination": {
-        "location": {
-          "latLng": {
-            "latitude": 17.439772,
-            "longitude": 78.376596
-          }
-        }
-      },
-      "travelMode": "DRIVE",
-      "routingPreference": "TRAFFIC_AWARE",
-      "departureTime": "2023-05-18T15:45:55.417Z",
-      "computeAlternativeRoutes": false,
-      "languageCode": "en-US",
-      "units": "IMPERIAL"
-    };
-
-    // this.appService.retrieveData(payload).subscribe(data => {
-
-    // })
   }
 
   private initializeLiveTrafficView() {
@@ -200,10 +132,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     let content = [];
     content.push('<div class="legend-title">Traffic Conditions</div>');
     content.push('<div class="legend-item"><div class="legend-color bg-green"></div><div class="legend-text">Good</div></div>');
-    content.push('<div class="legend-item"><div class="legend-color bg-yellow"></div><div class="legend-text">Moderate</div></div>');
+    content.push('<div class="legend-item"><div class="legend-color bg-orange"></div><div class="legend-text">Moderate</div></div>');
     content.push('<div class="legend-item"><div class="legend-color bg-red"></div><div class="legend-text">Heavy</div></div>');
     content.push('<div class="legend-item"><div class="legend-color bg-black"></div><div class="legend-text">Very Heavy</div></div>');
-    content.push('<div class="legend-item"><div class="legend-color bg-gray"></div><div class="legend-text">Blocked Road</div></div>');
+    content.push('<div class="legend-item"><div class="legend-color bg-blocked">-</div><div class="legend-text">Blocked Road</div></div>');
     legend.innerHTML = content.join('');
     legend.index = 1;
     this.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);

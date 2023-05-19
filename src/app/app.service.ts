@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable, forkJoin, of } from 'rxjs';
-import { map, switchMap, delay, catchError} from 'rxjs/operators';
+import { map, switchMap, delay, catchError } from 'rxjs/operators';
 
 
 import * as moment from 'moment';
@@ -34,17 +34,37 @@ export class AppService {
       ...this.postBody, ...this.formatLocation(form.road)
     };
 
-    return this.getDataFromMap(payload, form.startDate).pipe(map((res: any) => {
+    // return this.getDataFromMap(payload, form.startDate).pipe(map((res: any) => {
+    return this.getData(payload, form.startDate, form.road.name).pipe(map((res: any) => {
       return ({ label: form.startDate.toDateString(), data: res, backgroundColor: 'orange' });
     }),
-      delay(3000),
+      delay(5000),
       switchMap((firstData: any) => {
-        return this.getDataFromMap(payload, form.endDate).pipe(map((res: any) => {
+        // return this.getDataFromMap(payload, form.endDate).pipe(map((res: any) => {
+        return this.getData(payload, form.endDate, form.road.name).pipe(map((res: any) => {
           const secondData = { label: form.endDate.toDateString(), data: res, backgroundColor: 'blue' };
           return [firstData, secondData];
         }))
       })
     );
+  }
+
+  private getData(payload: any, providedDate: Date, roadName: string) {
+    const { year, month, date } = this.parseDate(providedDate);
+    const timeStamp = new Date(year, month, date).getTime().toString();
+    roadName = roadName.replaceAll(" ", "");
+    const dataKey = timeStamp + roadName;
+
+    const data = localStorage.getItem(dataKey);
+    if (data) {
+      const parsedData = JSON.parse(data);
+      return of(parsedData);
+    } else {
+      return this.getDataFromMap(payload, providedDate).pipe(map((res: any) => {
+        localStorage.setItem(dataKey, JSON.stringify(res));
+        return (res);
+      }));
+    }
   }
 
   private parseDate(providedDate: Date) {

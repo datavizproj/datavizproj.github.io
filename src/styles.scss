@@ -35,12 +35,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   background-color: #7fff7f;
 }
 
-.bg-yellow {
-  background-color: #ffff7f;
+.bg-orange {
+  background-color: orange;
 }
 
 .bg-red {
-  background-color: #ff7f7f;
+  background-color: #ed4141;
 }
 
 .bg-black {
@@ -48,8 +48,14 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #fff;
 }
 
-.bg-gray {
-  background-color: #ccc;
+.bg-blocked {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  line-height: 7px;
+  color: #fff;
+  background-color: #f00;
 }
 
 // Google legends ends

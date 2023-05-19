@@ -27,8 +27,7 @@
     <div class="date-section d-flex width-100-percent">
       <mat-form-field appearance="outline" class="flex-1">
         <mat-label>Choose a date</mat-label>
-        <input matInput readonly [matDatepicker]="startDatePicker" formControlName="startDate"
-          (dateInput)="onSelectStartDate($event)">
+        <input matInput readonly [matDatepicker]="startDatePicker" formControlName="startDate">
         <mat-hint>MM/DD/YYYY</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
         <mat-datepicker #startDatePicker></mat-datepicker>
@@ -36,19 +35,24 @@
 
       <mat-form-field appearance="outline" class="flex-1">
         <mat-label>Choose an another date </mat-label>
-        <input matInput readonly [matDatepicker]="endDatePicker" formControlName="endDate"
-          (dateInput)="onSelectEndDate($event)">
+        <input matInput readonly [matDatepicker]="endDatePicker" formControlName="endDate">
         <mat-hint>MM/DD/YYYY</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
         <mat-datepicker #endDatePicker></mat-datepicker>
       </mat-form-field>
     </div>
     <div class="d-flex-justify-end">
-      <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid" (click)="onSubmit()">Get Data</button>
+      <button type="submit" mat-raised-button color="primary" [disabled]="form.invalid || tdLoadingState === 'start'" (click)="onSubmit()">
+        Get Data
+        <mat-icon *ngIf="tdLoadingState === 'start'"><mat-spinner color="accent" diameter="18"></mat-spinner></mat-icon>
+      </button>
     </div>
   </form>
 
-    <div class="body" style="width: 100%; height: 100%;">
+    <div class="body">
+      <div *ngIf="tdLoadingState === 'start'" class="chart-loading">
+        <mat-spinner color="accent" diameter="40"></mat-spinner>
+      </div>
       <canvas id="myChart"></canvas>
     </div>
   </div>
