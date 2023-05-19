@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
@@ -9,6 +8,7 @@ import * as moment from 'moment';
 
 import { AppService } from "./app.service";
 import { AVAILABLE_ROADS } from "../constants";
+import { ROAD } from '../interfaces';
 
 declare var google: any;
 const hyderabad = { lat: 17.3850, lng: 78.4867 };
@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
   private chartRendered: boolean = false;
 
   private roads = AVAILABLE_ROADS;
+  private selectedRoad: ROAD | null = null;
   public filteredOptions: Observable<any[]>;
   public tdLoadingState: TDLoadingState = 'idle';
 
@@ -93,6 +94,12 @@ export class AppComponent implements OnInit {
     const filterValue = name.toLowerCase();
 
     return this.roads.filter(road => road.name.toLowerCase().includes(filterValue));
+  }
+
+  public roadSelected(road: ROAD) {
+    this.selectedRoad = road;
+    if (this.selectedRoad) this.map.setCenter({ lat: this.selectedRoad.startLat,  lng: this.selectedRoad.startLong });
+    if (this.selectedRoad) this.map.setZoom(17);
   }
 
   public onSubmit() {

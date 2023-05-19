@@ -19,7 +19,7 @@
       <input type="text" placeholder="Select Road" matInput [matAutocomplete]="auto" formControlName="road">
       <mat-icon matSuffix>add_road</mat-icon>
 
-      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="roadSelected($event.option.value)">
         <mat-option *ngFor="let road of filteredOptions | async" [value]="road">{{road.name}}</mat-option>
       </mat-autocomplete>
     </mat-form-field>
